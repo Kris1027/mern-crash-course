@@ -13,6 +13,6 @@ app.use(express.json()); // allows us to accept JSON data in the req.body
 app.use('/api/products', productRoutes);
 
 app.listen(PORT, () => {
-  connectDB();
-  console.log('Server started at http://localhost:' + PORT);
+    connectDB();
+    console.log('Server started at http://localhost:' + PORT);
 });
