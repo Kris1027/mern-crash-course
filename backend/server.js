@@ -1,5 +1,6 @@
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
+import mongoose from 'mongoose';
 import { connectDB } from './config/db.js';
 import Product from './models/product.model.js';
 
@@ -45,6 +46,32 @@ app.post('/api/products', async (req, res) => {
     });
   } catch (error) {
     console.error('Error in create product:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+    });
+  }
+});
+
+app.put('/api/products/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const product = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({
+      success: false,
+      message: 'Invalid product ID',
+    });
+  }
+
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(id, product, { new: true });
+    res.status(500).json({
+      success: true,
+      data: updatedProduct,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Server Error',
