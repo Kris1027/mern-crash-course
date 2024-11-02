@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Box, Button, Container, Heading, useColorModeValue, VStack } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Container,
+    Heading,
+    Input,
+    useColorModeValue,
+    useToast,
+    VStack,
+} from '@chakra-ui/react';
+import { useProductStore } from '../store/product';
 
 const CreatePage = () => {
     const [newProduct, setNewProduct] = useState({
@@ -7,9 +17,32 @@ const CreatePage = () => {
         price: '',
         image: '',
     });
+    const toast = useToast();
 
-    const handleAddProduct = () => {
-        console.log(newProduct);
+    const { createProduct } = useProductStore();
+
+    const handleAddProduct = async () => {
+        const { success, message } = await createProduct(newProduct);
+        if (!success) {
+            toast({
+                title: 'Error',
+                description: message,
+                status: 'error',
+                isClosable: true,
+            });
+        } else {
+            toast({
+                title: 'Success',
+                description: message,
+                status: 'success',
+                isClosable: true,
+            });
+        }
+        setNewProduct({
+            name: '',
+            price: '',
+            image: '',
+        });
     };
 
     return (
@@ -27,14 +60,13 @@ const CreatePage = () => {
                     shadow={'md'}
                 >
                     <VStack spacing={4}>
-                        <input
+                        <Input
                             placeholder='Product Name'
                             name='name'
-                            type='text'
                             value={newProduct.name}
                             onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                         />
-                        <input
+                        <Input
                             placeholder='Price'
                             name='price'
                             type='number'
@@ -43,17 +75,16 @@ const CreatePage = () => {
                                 setNewProduct({ ...newProduct, price: e.target.value })
                             }
                         />
-                        <input
+                        <Input
                             placeholder='Image URL'
                             name='image'
-                            type='text'
                             value={newProduct.image}
                             onChange={(e) =>
                                 setNewProduct({ ...newProduct, image: e.target.value })
                             }
                         />
 
-                        <Button colorScheme='blue' onClick={handleAddProduct}>
+                        <Button colorScheme='blue' onClick={handleAddProduct} w='full'>
                             Add Product
                         </Button>
                     </VStack>
