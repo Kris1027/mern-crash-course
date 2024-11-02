@@ -32,4 +32,19 @@ export const useProductStore = create((set) => ({
         set((state) => ({ products: state.products.filter((product) => product._id !== pId) }));
         return { success: true, message: data.message };
     },
+    updateProduct: async (pId, updatedProduct) => {
+        const res = await fetch(`/api/products/${pId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedProduct),
+        });
+        const data = await res.json();
+        if (!data.success) return { success: false, message: data.message };
+        set((state) => ({
+            products: state.products.map((product) => (product._id === pId ? data.data : product)),
+        }));
+        return { success: true, message: data.message };
+    },
 }));
